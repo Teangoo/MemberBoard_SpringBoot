@@ -35,7 +35,6 @@ public class MemberService {
             memberProfile.transferTo(new File(savePath));
         }
         memberDTO.setMemberProfileName(memberProfileOriginalFilename);
-        //toSaveEntity 메서드에 회원 엔티티를 같이 전달해야함.(로그인 이메일이 작성자와 동일하다는 전제조건)
 
         MemberEntity memberEntity = MemberEntity.toSaveEntity(memberDTO);
         Long saveId = memberRepository.save(memberEntity).getId();

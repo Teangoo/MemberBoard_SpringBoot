@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>글목록</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<h2 style="text-align: center">글목록</h2>
+<table class='table table-bordered' style='width: 600px; margin: auto; text-align: center'>
+    <tr>
+        <th>글번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>저장일</th>
+        <th>조회수</th>
+    </tr>
+    <tr th:each="board : ${boardList}">
+        <td th:text="${board.getId()}"></td>
+        <td th:text="${board.getBoardTitle()}" th:onclick="detail([[${board.getId()}]])"></td>
+        <td th:text="${board.getBoardWriter()}"></td>
+        <td th:text="*{#temporals.format(board.boardCreatedDate,'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="${board.getBoardHits()}"></td>
+    </tr>
+
+</table>
+<nav aria-label="Page navigation example" style="margin-top: 10px;">
+    <ul class="pagination" style="place-content: center">
+        <li class="page-item" th:classappend="${1 == boardList.pageable.pageNumber + 1} ? 'disabled' : '' ">
+            <a class="page-link" th:href="@{/board/(page=${boardList.pageable.pageNumber - 1})}">이전</a>
+        </li>
+        <li class="page-item" th:classappend="${i == boardList.pageable.pageNumber + 1} ? 'active' : '' "
+            th:each="i : ${#numbers.sequence(startPage, endPage)}">
+            <a class="page-link" th:href="@{/board/(page=${i - 1})}" th:text="${i}">1</a>
+        </li>
+        <li class="page-item"
+            th:classappend="${boardList.totalPages == boardList.pageable.pageNumber + 1} ? 'disabled' : '' ">
+            <a class="page-link" th:href="@{/board/(page=${boardList.pageable.pageNumber + 1})}">다음</a>
+        </li>
+        <li style="align-self: center;margin-left: 10px">
+            <input type="button" class="btn btn-outline-primary" value="글작성" onclick="boardSave()">
+        </li>
+    </ul>
+</nav>
+
+</body>
+<script th:lnline="javascript">
+    const boardSave = (id) => {
+        const loginCheck = '[[${session.loginEmail}]]';
+        if (loginCheck ==''){
+            alert("로그인 후 이용해주세요.")
+        }else{
+            location.href="/board/save-form";
+        }
+    }
+
+</script>
+</body>
+</html>

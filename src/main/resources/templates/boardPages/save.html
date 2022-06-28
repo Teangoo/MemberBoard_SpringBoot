@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 작성</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container text-center" style="width: 400px">
+    <form action="/board/save" method="post" enctype="multipart/form-data" class="container">
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" name="boardTitle" class="form-control" id="boardTitle" placeholder="게시글 제목">
+            <label for="boardTitle">게시글 제목</label>
+        </div>
+
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" name="boardWriter" class="form-control" id="boardWriter" th:value="${session.loginEmail}"
+                   placeholder="작성자" readonly>
+            <label for="boardWriter">작성자</label>
+        </div>
+        <div style="text-align-last: start; margin-left: 10px; font-size: 18px; font-weight: bold">내용</div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <textarea name="boardContents" cols="38" rows="10" id="boardContents"></textarea><br>
+        </div>
+
+        <div class="container">
+            <span style="color: darkblue"># 첨부파일 추가 #</span>
+        </div>
+        <div class="input-group mb-3" style="width: 340px; margin: auto">
+            <input type="file" class="form-control" id="boardFile" name="boardFile">
+        </div>
+        <input type="submit" value="게시글 저장" class="btn btn-lg btn-success">
+    </form>
+</div>
+</body>
+</html>
