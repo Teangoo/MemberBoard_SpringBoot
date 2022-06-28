@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery.js}"></script>
+</head>
+<body>
+<div class="text-center container">
+    <h1>회원가입</h1>
+</div>
+<div class="container text-center" style="width: 400px">
+    <form action="/member/save" method="post" enctype="multipart/form-data" class="container" id="memberSignUp">
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" name="memberEmail" class="form-control" id="memberEmail" onblur="memberEmailCheck()"
+                   placeholder="이메일 입력">
+            <label for="memberEmail">이메일 입력</label>
+        </div>
+        <span id="memberIdCheck" style="display:none"></span>
+
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="password" name="memberPassword" class="form-control" id="memberPassword"
+                   onblur="passwordCheck()"
+                   placeholder="비밀번호 입력">
+            <label for="memberPassword">비밀번호 입력</label>
+        </div>
+        <label id="passwordResult" style="display: none"></label>
+
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" name="memberName" id="memberName" placeholder="이름">
+            <label for="memberName">이름</label>
+        </div>
+
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" name="memberMobile" id="memberMobile" onblur="MobileCheck()"
+                   placeholder="전화번호">
+            <label for="memberMobile">전화번호</label>
+        </div>
+        <label id="mobileResult" style="display: none"></label>
+        <div class="container">
+            <span style="color: darkblue"># 프로필사진 추가 #</span>
+        </div>
+        <div class="input-group mb-3" style="width: 400px; margin: auto">
+            <input type="file" class="form-control" id="memberProfile" name="memberProfile">
+        </div>
+        <input type="button" value="회원가입" class="btn btn-lg btn-success" onclick="memberSaveButton()">
+    </form>
+</div>
+</body>
+<script th:lnline="javascript">
+    let EmailPass = false;
+    let pwdPass = false;
+    let mobilePass = true;
+    const memberEmailCheck = () => {
+        const memberEmail = document.getElementById("memberEmail").value;
+        const memberIdCheck = document.getElementById("memberIdCheck");
+        const memberIdLength = memberEmail.length;
+        $.ajax({
+            type: "post",
+            url: "/member/duplicate-check",
+            data: {"memberEmail": memberEmail}, // 전송하는 파라미터
+            dataType: "text", // 리턴받을 데이터 형식
+            success: function (result) {
+                if (memberIdLength == 0) {
+                    memberIdCheck.innerHTML = "필수입력사항입니다.";
+                    memberIdCheck.style.color = "red";
+                    memberIdCheck.style.display = 'block';
+                    EmailPass = false;
+                } else if (result == "ok") {
+                    memberIdCheck.innerHTML = "사용가능한 아이디입니다.";
+                    memberIdCheck.style.color = "green";
+                    memberIdCheck.style.display = 'block';
+                    EmailPass = true;
+                } else {
+                    memberIdCheck.innerHTML = "이미사용중인 아이디입니다.";
+                    memberIdCheck.style.color = "red";
+                    memberIdCheck.style.display = 'block';
+                    EmailPass = false;
+                }
+            },
+            error: function () {
+                alert("어디가 틀렸을까");
+            }
+        });
+    }
+
+    const passwordCheck = () => {
+        const password = document.getElementById("memberPassword").value;
+        const exp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+-=~`]{5,10}$/;
+        const passwordLength = password.length;
+        const passwordResult = document.getElementById("passwordResult");
+        if (passwordLength == 0) {
+            passwordResult.innerHTML = "필수입력사항입니다.";
+            passwordResult.style.color = "red";
+            passwordResult.style.display = 'block';
+           pwdPass = false;
+        } else if (!password.match(exp)) {
+            passwordResult.innerHTML = "비밀번호는 대소문자 + 특수문자를 포함한 5~10이하로 입력하세요.";
+            passwordResult.style.color = "red";
+            passwordResult.style.display = 'block';
+            pwdPass = false;
+        } else {
+            passwordResult.innerHTML = "사용가능한 비밀번호입니다.";
+            passwordResult.style.color = "green";
+            passwordResult.style.display = 'block';
+            pwdPass = true;
+        }
+    }
+
+    const MobileCheck = () => {
+        const memberMobile = document.getElementById("memberMobile").value;
+        const memberMobileLength = memberMobile.length;
+        const exp = /^\d{3}-\d{3,4}-\d{4}$/;
+        const mobileResult = document.getElementById("mobileResult");
+        if (memberMobileLength == 0){
+            mobileResult.style.display = 'none';
+            mobilePass = true;
+        }else if(!memberMobile.match(exp)){
+            mobileResult.innerHTML = "000-000(0)-0000형식으로 입력하세요.";
+            mobileResult.style.color = "red";
+            mobileResult.style.display = 'block';
+            mobilePass = false;
+        }else{
+            mobileResult.innerHTML = "사용가능한 전화번호입니다.";
+            mobileResult.style.color = "green";
+            mobileResult.style.display = 'block';
+            mobilePass = true;
+        }
+    }
+
+    const memberSaveButton = () => {
+        if(EmailPass && mobilePass && mobilePass){
+            document.getElementById("memberSignUp").submit();
+        }else{
+            alert("잘못된 입력이 있어요!")
+        }
+    }
+</script>
+</html>

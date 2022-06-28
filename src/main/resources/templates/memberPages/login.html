@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery.js}"></script>
+</head>
+<body>
+<div class="text-center container">
+    <h1>로그인</h1>
+</div>
+<div class="container text-center" style="width: 400px">
+    <form action="/member/login" method="post" >
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" id="memberEmail" name="memberEmail" placeholder="이메일 입력">
+            <label for="memberEmail">이메일 입력</label>
+        </div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="password" class="form-control" id="memberPassword" name="memberPassword" placeholder="비밀번호 입력">
+            <label for="memberPassword">비밀번호 입력</label>
+        </div>
+        <div class="btn-group" role="group" aria-label="Basic outlined example">
+            <input type="submit" class=" w-100 btn btn-lg btn-outline-primary" value="로그인">
+            <input type="button" class=" w-100 btn btn-lg btn-outline-primary" onclick="MemberSave()" value="회원가입">
+        </div>
+    </form>
+</div>
+</body>
+<script th:lnline="javascript">
+    const MemberSave = () => {
+        location.href = "/member/save-form";
+    }
+    $(document).ready(function (){
+        let message ="[[${loginFail}]]";
+        if(message != ""){
+            alert(message);
+        }
+    });
+</script>
+</html>
