@@ -65,4 +65,17 @@ public class MemberController {
         memberService.delete(id);
         return new ResponseEntity(HttpStatus.OK);
     }
+
+    @GetMapping("/mypage")
+    public String mypage(Model model , HttpSession session){
+        MemberDTO memberDTO = memberService.findById((Long) session.getAttribute("loginId"));
+        model.addAttribute("member",memberDTO);
+        return "/memberPages/mypage";
+    }
+
+    @PostMapping("/update")
+    public String update(@ModelAttribute MemberDTO memberDTO) throws IOException {
+        memberService.update(memberDTO);
+        return "redirect:/member/mypage";
+    }
 }

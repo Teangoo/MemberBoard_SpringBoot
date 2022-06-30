@@ -1,7 +1,11 @@
 package com.its.memberboard.service;
 
 import com.its.memberboard.dto.MemberDTO;
+import com.its.memberboard.entity.BoardEntity;
+import com.its.memberboard.entity.CommentEntity;
 import com.its.memberboard.entity.MemberEntity;
+import com.its.memberboard.repository.BoardRepository;
+import com.its.memberboard.repository.CommentRepository;
 import com.its.memberboard.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,8 @@ import java.util.Optional;
 
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     public String findByEmail(String memberEmail) {
         Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(memberEmail);
@@ -69,5 +75,36 @@ public class MemberService {
 
     public void delete(Long id) {
         memberRepository.deleteById(id);
+    }
+
+    public MemberDTO findById(Long loginId) {
+        Optional<MemberEntity> optionalMemberEntity = memberRepository.findById(loginId);
+        if(optionalMemberEntity.isPresent()){
+            MemberEntity memberEntity = optionalMemberEntity.get();
+            MemberDTO memberDTO = MemberDTO.toDTO(memberEntity);
+            return memberDTO;
+        }else{
+            return null;
+        }
+    }
+
+    public void update(MemberDTO memberDTO) throws IOException {
+        MultipartFile memberProfile = memberDTO.getMemberProfile();
+        Optional<MemberEntity> optionalMemberEntity = memberRepository.findById(memberDTO.getId());
+        MemberEntity memberEntity1 = optionalMemberEntity.get();
+        List<BoardEntity> boardRepositoryByMemberEntityId = boardRepository.findByMemberEntityId(memberDTO.getId());
+        List<CommentEntity> commentRepositoryByMemberEntityId = commentRepository.findByMemberEntityId(memberDTO.getId());
+        if (!memberProfile.isEmpty()) {
+            String memberProfileOriginalFilename = memberProfile.getOriginalFilename();
+            memberProfileOriginalFilename = System.currentTimeMillis() + "_" + memberProfileOriginalFilename;
+            String savePath = "/Users/taeyeonlee/developer/spring_boot/member_img/" + memberProfileOriginalFilename;
+            memberProfile.transferTo(new File(savePath));
+            memberDTO.setMemberProfileName(memberProfileOriginalFilename);
+            MemberEntity memberEntity = MemberEntity.toUpdateFileEntity(memberDTO,boardRepositoryByMemberEntityId,commentRepositoryByMemberEntityId);
+            Long saveId = memberRepository.save(memberEntity).getId();
+        }else {
+            MemberEntity memberEntity = MemberEntity.toUpdateNoFileEntity(memberDTO,memberEntity1,boardRepositoryByMemberEntityId,commentRepositoryByMemberEntityId);
+            Long saveId = memberRepository.save(memberEntity).getId();
+        }
     }
 }

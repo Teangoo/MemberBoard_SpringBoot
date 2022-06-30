@@ -93,7 +93,7 @@ public class BoardService {
             String savePath = "/Users/taeyeonlee/developer/spring_boot/board_img/" + boardFileOriginalFilename;
             boardFile.transferTo(new File(savePath));
             boardDTO.setBoardFileName(boardFileOriginalFilename);
-            BoardEntity boardEntity = BoardEntity.toUpdateFileEntity(boardDTO, boardEntity1,memberEntity,commentEntityList);
+            BoardEntity boardEntity = BoardEntity.toUpdateFileEntity(boardDTO,boardEntity1,memberEntity,commentEntityList);
             Long saveId = boardRepository.save(boardEntity).getId();
             return saveId;
         } else {

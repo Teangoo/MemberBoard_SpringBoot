@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>내정보 수정</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery.js}"></script>
+</head>
+<body>
+<form action="/member/update" method="post" enctype="multipart/form-data" id="memberUpdate">
+    <div class="container text-center" style="width: 400px">
+        <input type="hidden" th:value="${member.getId()}" name="id" id="memberId" readonly><br>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" style="text-align: center; font-size: 20px"
+                   th:value="${member.getMemberEmail()}" id="memberEmail" name="memberEmail" placeholder="이메일" readonly>
+            <label for="memberEmail">이메일</label>
+        </div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" id="memberPassword"
+                   placeholder="비밀번호" name="memberPassword">
+            <label for="memberPassword">비밀번호</label>
+        </div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" style="text-align: center; font-size: 20px"
+                   th:value="${member.getMemberName()}" id="memberName" name="memberName" placeholder="이름" readonly>
+            <label for="memberName">이름</label>
+        </div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" style="text-align: center; font-size: 20px"
+                   th:value="${member.getMemberMobile()}" id="memberMobile" name="memberMobile" placeholder="전화번호">
+            <label for="memberMobile">전화번호</label>
+        </div>
+        <label>첨부사진</label><br>
+        <img th:src="@{|/memberUpload/${member.memberProfileName}|}" width="370" height="300" alt=""><br>
+        <div class="container">
+            <span style="color: darkblue"># 첨부파일 변경 #</span>
+        </div>
+        <div class="input-group mb-3" style="width: 340px; margin: auto">
+            <input type="file" class="form-control" id="memberProfile" name="memberProfile">
+        </div>
+        <input type="button" value="회원정보 수정" class="btn btn-lg btn-success" onclick="memberUpdateCheck()">
+        <input type="button" value="회원탈퇴" class="btn btn-lg btn-success" th:onclick="memberDelete([[${member.id}]])">
+    </div>
+</form>
+</body>
+<script th:lnline="javascript">
+    const memberUpdateCheck = () => {
+        const memberPassword = '[[${member.memberPassword}]]';
+        const memberInputPassword = document.getElementById("memberPassword").value;
+        if (memberPassword == memberInputPassword) {
+            document.getElementById("memberUpdate").submit();
+        } else {
+            alert("비밀번호가 틀립니다.");
+            document.getElementById("memberPassword").value = "";
+            document.getElementById("memberPassword").focus();
+        }
+    }
+    const memberDelete = (id) => {
+        const memberPassword = '[[${member.memberPassword}]]';
+        const memberInputPassword = document.getElementById("memberPassword").value;
+        if (memberPassword == memberInputPassword) {
+            $.ajax({
+                type: "post",
+                url: "/member/delete",
+                data: {"id":id},
+                success:function (){
+                    location.href="/member/logout";
+                }
+            })
+        } else {
+            alert("비밀번호가 틀립니다.");
+            document.getElementById("memberPassword").value = "";
+            document.getElementById("memberPassword").focus();
+        }
+    }
+</script>
+</html>

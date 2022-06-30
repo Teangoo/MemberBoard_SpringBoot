@@ -41,6 +41,32 @@ public class MemberEntity {
     @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
     private List<CommentEntity> commentEntityList = new ArrayList<>();
 
+    public static MemberEntity toUpdateFileEntity(MemberDTO memberDTO, List<BoardEntity> boardRepositoryByMemberEntityId, List<CommentEntity> commentRepositoryByMemberEntityId) {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setId(memberDTO.getId());
+        memberEntity.setMemberEmail(memberDTO.getMemberEmail());
+        memberEntity.setMemberPassword(memberDTO.getMemberPassword());
+        memberEntity.setMemberName(memberDTO.getMemberName());
+        memberEntity.setMemberMobile(memberDTO.getMemberMobile());
+        memberEntity.setMemberProfileName(memberDTO.getMemberProfileName());
+        memberEntity.setBoardEntityList(boardRepositoryByMemberEntityId);
+        memberEntity.setCommentEntityList(commentRepositoryByMemberEntityId);
+        return memberEntity;
+    }
+
+    public static MemberEntity toUpdateNoFileEntity(MemberDTO memberDTO,MemberEntity memberEntity1, List<BoardEntity> boardRepositoryByMemberEntityId, List<CommentEntity> commentRepositoryByMemberEntityId) {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setId(memberDTO.getId());
+        memberEntity.setMemberEmail(memberDTO.getMemberEmail());
+        memberEntity.setMemberPassword(memberDTO.getMemberPassword());
+        memberEntity.setMemberName(memberDTO.getMemberName());
+        memberEntity.setMemberMobile(memberDTO.getMemberMobile());
+        memberEntity.setMemberProfileName(memberEntity1.memberProfileName);
+        memberEntity.setBoardEntityList(boardRepositoryByMemberEntityId);
+        memberEntity.setCommentEntityList(commentRepositoryByMemberEntityId);
+        return memberEntity;
+    }
+
     @PreRemove
     private void preRemove() {
         boardEntityList.forEach(board -> board.setMemberEntity(null));

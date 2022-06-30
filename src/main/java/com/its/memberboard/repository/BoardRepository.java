@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface BoardRepository extends JpaRepository<BoardEntity,Long> {
     @Modifying
     @Transactional
@@ -17,5 +19,7 @@ public interface BoardRepository extends JpaRepository<BoardEntity,Long> {
     Page<BoardEntity> findByBoardTitleContainingOrBoardWriterContaining(String q, String q1 , Pageable pageable);
     Page<BoardEntity> findByBoardTitleContaining(String q, Pageable pageable);
     Page<BoardEntity> findByBoardWriterContaining(String q, Pageable pageable);
+
+    List<BoardEntity> findByMemberEntityId(Long id);
 
 }
