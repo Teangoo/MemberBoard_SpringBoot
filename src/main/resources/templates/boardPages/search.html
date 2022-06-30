@@ -2,12 +2,12 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>글목록</title>
+    <title>검색결과</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script th:src="@{/js/jquery.js}"></script>
 </head>
 <body>
-<h2 style="text-align: center">글목록</h2>
+<h2 style="text-align: center">검색결과</h2>
 
 <div class="input-group" style="display: inline;width: auto;margin-left: 650px">
     <select class="form-select form-select-lg"
@@ -46,15 +46,15 @@
 <nav aria-label="Page navigation example" style="margin-top: 10px;">
     <ul class="pagination" style="place-content: center">
         <li class="page-item" th:classappend="${1 == boardList.pageable.pageNumber + 1} ? 'disabled' : '' ">
-            <a class="page-link" th:href="@{/board/list/(page=${boardList.pageable.pageNumber - 1})}">이전</a>
+            <a class="page-link" th:href="@{/board/search(page=${boardList.pageable.pageNumber - 1},q=${q},type=${type})}">이전</a>
         </li>
         <li class="page-item" th:classappend="${i == boardList.pageable.pageNumber + 1} ? 'active' : '' "
             th:each="i : ${#numbers.sequence(startPage, endPage)}">
-            <a class="page-link" th:href="@{/board/list/(page=${i - 1})}" th:text="${i}">1</a>
+            <a class="page-link" th:href="@{/board/search(page=${i - 1},q=${q},type=${type})}" th:text="${i}">1</a>
         </li>
         <li class="page-item"
             th:classappend="${boardList.totalPages == boardList.pageable.pageNumber + 1} ? 'disabled' : '' ">
-            <a class="page-link" th:href="@{/board/list/(page=${boardList.pageable.pageNumber + 1})}">다음</a>
+            <a class="page-link" th:href="@{/board/search(page=${boardList.pageable.pageNumber + 1},q=${q},type=${type})}">다음</a>
         </li>
         <li style="align-self: center;margin-left: 10px">
             <input type="button" class="btn btn-outline-primary" value="글작성" onclick="boardSave()">
@@ -64,6 +64,7 @@
 
 </body>
 <script th:lnline="javascript">
+
     const boardSave = (id) => {
         const loginCheck = '[[${session.loginEmail}]]';
         if (loginCheck == '') {
@@ -82,5 +83,5 @@
     }
 
 </script>
-</body>
+
 </html>

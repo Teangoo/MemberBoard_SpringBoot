@@ -2,6 +2,7 @@ package com.its.memberboard.entity;
 
 import com.its.memberboard.dto.MemberDTO;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "member")
 public class MemberEntity {
     @Id
@@ -36,9 +38,13 @@ public class MemberEntity {
     @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BoardEntity> boardEntityList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = false, fetch = FetchType.LAZY)
+    private List<CommentEntity> commentEntityList = new ArrayList<>();
+
     @PreRemove
     private void preRemove() {
         boardEntityList.forEach(board -> board.setMemberEntity(null));
+        commentEntityList.forEach(comment -> comment.setMemberEntity(null));
     }
 
     public static MemberEntity toSaveEntity(MemberDTO memberDTO) {

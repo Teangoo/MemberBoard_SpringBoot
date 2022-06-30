@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery.js}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+</head>
+<style>
+    label {
+        font-weight: bold;
+        font-size: 15px;
+    }
+</style>
+<body>
+<div class="container text-center" style="width: 400px">
+    <input type="hidden" th:value="${board.getId()}" id="boardId" readonly><br>
+    <div class="form-floating mb-1" style="margin: auto">
+        <input type="text" class="form-control" style="text-align: center; font-size: 20px"
+               th:value="${board.getBoardTitle()}" id="BoardTitle" placeholder="게시글 제목" readonly>
+        <label for="BoardTitle">제목</label>
+    </div>
+    <div class="form-floating mb-1" style="margin: auto">
+        <input type="text" class="form-control" th:value="${board.getBoardWriter()}" id="BoardWriter" placeholder="작성자"
+               readonly>
+        <label for="BoardWriter">작성자</label>
+    </div>
+    <div class="form-floating mb-1" style="margin: auto">
+        <textarea class="form-control" style="height: 100px;" id="BoardContents" cols="30" rows="10"
+                  th:value="${board.getBoardContents()}"
+                  readonly>[[${board.getBoardContents}]]</textarea>
+        <label for="BoardContents">내용</label>
+    </div>
+    <div class="form-floating mb-1" style="margin: auto">
+        <input type="text" class="form-control" th:value="${board.getBoardHits()}" id="BoardHits" placeholder="조회수"
+               readonly>
+        <label for="BoardHits">조회수</label>
+    </div>
+    <div class="form-floating mb-1" style="margin: auto">
+        <input type="text" class="form-control"
+               th:value="*{#temporals.format(board.getBoardCreatedDate(),'yyyy-MM-dd HH:mm:ss')}"
+               placeholder="작성시간" id="BoardCreatedDate" readonly>
+        <label for="BoardCreatedDate">작성시간</label>
+    </div>
+    <label>첨부사진</label><br>
+    <img th:src="@{|/boardUpload/${board.boardFileName}|}" width="370" height="300" alt=""><br>
+</div>
+<div th:if="${session.loginEmail}">
+    <div th:if="${session.loginEmail eq board.boardWriter}">
+        <div style="margin-top: 10px; text-align-last: center">
+            <input type="button" class="btn btn-lg btn-primary" onclick="boardUpdate()" value="글수정">
+            <input type="button" class="btn btn-lg btn-primary" onclick="boardDelete()" value="글삭제">
+        </div>
+    </div>
+    <div th:if="${session.loginEmail.toString().equals('admin@gmail.com')}">
+        <div style="margin-top: 10px; text-align-last: center">
+            <input type="button" class="btn btn-lg btn-primary" onclick="boardDelete()" value="글삭제">
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div id="comment-write" class="input-group mb-3" style="place-content: center;margin-top: 20px">
+        <div class="form-floating">
+            <input type="text" id="commentWriter" class="form-control" th:value="${session.loginEmail}"
+                   placeholder="작성자" readonly>
+            <label for="commentWriter">작성자</label>
+        </div>
+        <div class="form-floating">
+            <input type="text" id="commentContents" class="form-control" placeholder="내용">
+            <label for="commentContents">내용</label>
+        </div>
+        <button id="comment-write-btn" class="btn btn-primary">댓글작성</button>
+    </div>
+    <div id="comment-list">
+        <table class="table table-bordered" style="margin: auto;text-align: center">
+            <tr style="background-color: darkgray">
+                <th style="width: 100px">댓글번호</th>
+                <th style="width: 300px">작성자</th>
+                <th style="width: 400px">내용</th>
+                <th style="width: 300px">작성시간</th>
+                <th style="width: 100px">댓글 삭제</th>
+            </tr>
+            <tr th:each="comment : ${commentList}" th:id="${comment.getId()}">
+                <td style="vertical-align: middle" th:text="${comment.getId()}"></td>
+                <td style="vertical-align: middle" th:text="${comment.getCommentWriter()}"></td>
+                <td style="vertical-align: middle" th:text="${comment.getCommentContents()}"></td>
+                <td style="vertical-align: middle"
+                    th:text="*{#temporals.format(comment.commentCreatedDate,'yyyy년MM월dd일 HH시mm분ss초')}"></td>
+                <td style="vertical-align: middle"><input type="button" class="btn btn-danger" value="삭제"
+                                                          th:onclick="commentDelete([[${comment.id}]],[[${comment.commentWriter}]])">
+                </td>
+
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+<script th:lnline="javascript">
+    const id = [[${board.getId()}]]
+    const boardUpdate = () => {
+        location.href = "/board/update-form/" + id;
+    }
+    const boardDelete = () => {
+        $.ajax({
+            type: "post",
+            url: "/board/delete",
+            data: {"id": id},
+            success: function () {
+                location.href = "/board/list";
+            }
+        });
+    }
+    $("#comment-write-btn").click(function () {
+        const loginCheck = '[[${session.loginEmail}]]';
+
+        if (loginCheck == '') {
+            alert("로그인후 이용하세요");
+        } else {
+            const commentContents = document.getElementById("commentContents").value;
+            $.ajax({
+                type: "post",
+                url: "/comment/save",
+                data: {"boardId": id, "commentWriter": loginCheck, "commentContents": commentContents},
+                dataType: "json",
+                success: function (result) {
+                    let output = "<table class=\"table table-bordered\" style=\"margin: auto;text-align: center\">";
+                    output += "<tr style=\"background-color: darkgray\"><th style=\"width: 100px\">댓글번호</th>";
+                    output += "<th style=\"width: 300px\">작성자</th>";
+                    output += "<th style=\"width: 400px\">내용</th>";
+                    output += "<th style=\"width: 300px\">작성시간</th>";
+                    output += "<th style=\"width: 100px\">댓글 삭제</th>";
+                    output += "</tr>";
+                    for (let i in result) {
+                        output += "<tr id=" + result[i].id + ">";
+                        output += "<td style=\"vertical-align: middle\">" + result[i].id + "</td>";
+                        output += "<td style=\"vertical-align: middle\">" + result[i].commentWriter + "</td>";
+                        output += "<td style=\"vertical-align: middle\">" + result[i].commentContents + "</td>";
+                        output += "<td style=\"vertical-align: middle\">" + moment(result[i].commentCreatedDate).format("YYYY년MM월DD일 HH시mm분ss초") + "</td>";
+                        // output += "<td style=\"vertical-align: middle\">" + "<input type=\"button\" class=\"btn btn-danger\" onclick=\"commentDelete(" + result[i].id + "," + result[i].commentWriter + ")\" value=\"삭제\">" + "</td>";
+                        output += "<td style=\"vertical-align: middle\">" + "<input type=\"button\" class=\"btn btn-danger\" onclick=\"commentDelete(" + result[i].id + ",'" + result[i].commentWriter + "')\" value=\"삭제\">" + "</td>";
+                        output += "</tr>";
+                    }
+                    output += "</table>";
+                    document.getElementById('comment-list').innerHTML = output;
+                    document.getElementById('commentContents').value = '';
+                },
+                error: function () {
+                    alert("어디가 틀렸을까");
+                }
+            });
+        }
+    });
+
+    const commentDelete = (id, commentWriter) => {
+        const loginCheck = '[[${session.loginEmail}]]';
+        if (loginCheck == commentWriter) {
+            $.ajax({
+                type: "post",
+                url: "/comment/delete",
+                data: {"id": id},
+                success: function () {
+                    document.getElementById(id).remove();
+                }
+            });
+        } else {
+            alert("작성자만 삭제가능합니다.")
+        }
+    }
+</script>
+</html>

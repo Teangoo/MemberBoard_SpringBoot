@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지</title>
+</head>
+<body>
+<input type="button" onclick="memberList()" value="회원 목록 페이지" class="btn btn-danger">
+</body>
+
+<script>
+    const memberList = () => {
+      location.href="/admin/memberList";
+    }
+</script>
+</html>

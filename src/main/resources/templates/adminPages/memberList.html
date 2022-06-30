@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 관리</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script th:src="@{/js/jquery.js}"></script>
+</head>
+<body>
+<table class='table table-bordered' style='width: 1000px; margin: auto; text-align: center'>
+    <tr>
+        <th style="width: 60px; vertical-align: middle">회원번호</th>
+        <th style="width: 200px; vertical-align: middle">회원이메일</th>
+        <th style="width: 200px; vertical-align: middle">회원비밀번호</th>
+        <th style="width: 100px; vertical-align: middle">회원이름</th>
+        <th style="width: 120px; vertical-align: middle">회원전화번호</th>
+        <th style="width: 120px; vertical-align: middle">회원삭제</th>
+
+    </tr>
+    <tr th:each="member : ${memberList}" th:id="${member.getId()}">
+        <td style="vertical-align: middle" th:text="${member.getId()}"></td>
+        <td style="vertical-align: middle" th:text="${member.getMemberEmail()}"></td>
+        <td style="vertical-align: middle" th:text="${member.getMemberPassword()}"></td>
+        <td style="vertical-align: middle" th:text="${member.getMemberName()}"></td>
+        <td style="vertical-align: middle" th:text="${member.getMemberMobile()}"></td>
+        <td style="vertical-align: middle"><input type="button" class="btn btn-danger" value="삭제" th:onclick="memberDelete([[${member.id}]])"></td>
+    </tr>
+</table>
+</body>
+<script th:lnline="javascript">
+    const memberDelete = (id) => {
+        $.ajax({
+            type: "post",
+            url: "/member/delete",
+            data: {"id": id},
+            success: function () {
+                document.getElementById(id).remove();
+            }
+        });
+    }
+</script>
+</html>

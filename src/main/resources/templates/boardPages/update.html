@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 수정</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/jquery.js}"></script>
+</head>
+<body>
+<form action="/board/update" method="post" enctype="multipart/form-data">
+    <div class="container text-center" style="width: 400px">
+        <input type="hidden" th:value="${boardUpdate.getId()}" name="id" id="boardId" readonly><br>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" style="text-align: center; font-size: 20px"
+                   th:value="${boardUpdate.getBoardTitle()}" id="BoardTitle" name="boardTitle" placeholder="게시글 제목" >
+            <label for="BoardTitle">제목</label>
+        </div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" th:value="${boardUpdate.getBoardWriter()}" id="BoardWriter"
+                   placeholder="작성자" name="boardWriter" readonly>
+            <label for="BoardWriter">작성자</label>
+        </div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <textarea class="form-control" id="BoardContents" cols="38" rows="10" name="boardContents" th:value="${boardUpdate.getBoardContents()}"
+                      >[[${boardUpdate.getBoardContents}]]</textarea>
+            <label for="BoardContents">내용</label>
+        </div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control" th:value="${boardUpdate.getBoardHits()}" id="BoardHits" placeholder="조회수"
+                   readonly>
+            <label for="BoardHits">조회수</label>
+        </div>
+        <div class="form-floating mb-1" style="margin: auto">
+            <input type="text" class="form-control"
+                   th:value="*{#temporals.format(boardUpdate.getBoardCreatedDate(),'yyyy-MM-dd HH:mm:ss')}"
+                   placeholder="작성시간" id="BoardCreatedDate" readonly>
+            <label for="BoardCreatedDate">작성시간</label>
+        </div>
+        <label>첨부사진</label><br>
+        <img th:src="@{|/boardUpload/${boardUpdate.boardFileName}|}" width="370" height="300" alt=""><br>
+        <div class="container">
+            <span style="color: darkblue"># 첨부파일 변경 #</span>
+        </div>
+        <div class="input-group mb-3" style="width: 340px; margin: auto">
+            <input type="file" class="form-control" id="boardFile" name="boardFile">
+        </div>
+        <input type="submit" value="게시글 수정" class="btn btn-lg btn-success">
+    </div>
+</form>
+</body>
+</html>

@@ -9,7 +9,15 @@
 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
     <div th:if="${session.loginEmail}">
         <div>
-            <input type="button" onclick="memberLogOut()" value="로그아웃" class="btn btn-warning">
+            <div th:if="${session.loginEmail.toString().equals('admin@gmail.com')}">
+                <input type="button" onclick="admin()" value="관리자용" class="btn btn-danger">
+                <input type="button" onclick="mypage()" value="마이페이지" class="btn btn-secondary">
+                <input type="button" onclick="memberLogOut()" value="로그아웃" class="btn btn-warning">
+            </div>
+            <div th:unless="${session.loginEmail.toString().equals('admin@gmail.com')}">
+                <input type="button" onclick="mypage()" value="마이페이지" class="btn btn-secondary">
+                <input type="button" onclick="memberLogOut()" value="로그아웃" class="btn btn-warning">
+            </div>
         </div>
     </div>
     <div th:unless="${session.loginEmail}">
@@ -33,6 +41,9 @@
     }
     const memberLogOut = () => {
         location.href = "/member/logout";
+    }
+    const admin = () => {
+        location.href = "/admin/";
     }
 </script>
 </html>

@@ -59,8 +59,8 @@
         $.ajax({
             type: "post",
             url: "/member/duplicate-check",
-            data: {"memberEmail": memberEmail}, // 전송하는 파라미터
-            dataType: "text", // 리턴받을 데이터 형식
+            data: {"memberEmail": memberEmail},
+            dataType: "text",
             success: function (result) {
                 if (memberIdLength == 0) {
                     memberIdCheck.innerHTML = "필수입력사항입니다.";
